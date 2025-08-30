@@ -3,13 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>VideoShare - Upload & Watch Videos</title>
+    <title>AwesomeShare - Upload & Watch Videos</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div id="app">
       <!-- App content will be rendered here -->
     </div>
+    
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+    
+    <!-- Scripts -->
+    <script src="/js/services/ApiService.js"></script>
+    <script src="/js/utils/NotificationService.js"></script>
+    <script src="/js/utils/ModalService.js"></script>
+    <script src="/js/components/AuthComponent.js"></script>
+    <script src="/js/components/UploadComponent.js"></script>
     <script src="/app.js"></script>
   </body>
 </html>

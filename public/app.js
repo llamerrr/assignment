@@ -333,10 +333,16 @@ class VideoApp {
             <div class="form-group">
               <label class="form-label">Username</label>
               <input type="text" class="form-input" id="username" required>
+              <div class="form-hint" id="username-hint" style="display: none;">
+                Username must be 3-20 characters long and contain only letters, numbers, underscores, and hyphens.
+              </div>
             </div>
             <div class="form-group">
               <label class="form-label">Password</label>
               <input type="password" class="form-input" id="password" required>
+              <div class="form-hint" id="password-hint" style="display: none;">
+                Password must be at least 6 characters long.
+              </div>
             </div>
             <button type="submit" class="btn btn-primary btn-full" id="auth-submit">Sign In</button>
           </form>
@@ -354,7 +360,7 @@ class VideoApp {
       <header class="header">
         <div class="container">
           <div class="header-content">
-            <a href="#" class="logo">VideoShare</a>
+            <a href="#" class="logo">AwesomeShare</a>
             <nav class="nav-menu">
               <a href="#" class="nav-link" data-page="home">Home</a>
               <a href="#" class="nav-link" data-page="upload">Upload</a>
@@ -881,11 +887,17 @@ class VideoApp {
       document.getElementById('auth-submit').textContent = 'Sign Up';
       document.getElementById('auth-switch-text').textContent = 'Already have an account?';
       document.getElementById('auth-switch-link').textContent = 'Sign in';
+      // Show validation hints for sign up
+      document.getElementById('username-hint').style.display = 'block';
+      document.getElementById('password-hint').style.display = 'block';
     } else {
       document.getElementById('auth-title').textContent = 'Sign In';
       document.getElementById('auth-submit').textContent = 'Sign In';
       document.getElementById('auth-switch-text').textContent = "Don't have an account?";
       document.getElementById('auth-switch-link').textContent = 'Sign up';
+      // Hide validation hints for sign in
+      document.getElementById('username-hint').style.display = 'none';
+      document.getElementById('password-hint').style.display = 'none';
     }
   }
 
@@ -893,6 +905,22 @@ class VideoApp {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     const isLogin = document.getElementById('auth-title').textContent === 'Sign In';
+
+    // Client-side validation for sign up
+    if (!isLogin) {
+      const usernameValid = /^[A-Za-z0-9_\-]{3,20}$/.test(username.trim());
+      const passwordValid = password.length >= 6;
+
+      if (!usernameValid) {
+        this.showError('Username must be 3-20 characters long and contain only letters, numbers, underscores, and hyphens.');
+        return;
+      }
+
+      if (!passwordValid) {
+        this.showError('Password must be at least 6 characters long.');
+        return;
+      }
+    }
 
     try {
       if (isLogin) {
@@ -1180,22 +1208,29 @@ class VideoApp {
       // Handle completion
       xhr.addEventListener('load', () => {
         try {
-          const result = JSON.parse(xhr.responseText);
-          console.log('Upload result:', result);
-          
-          if (result.success) {
-            // Show success animation
-            setTimeout(() => {
-              this.showSuccess('Video uploaded successfully!');
-              this.showPage('home');
-              this.loadVideos();
-            }, 500);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const result = JSON.parse(xhr.responseText);
+            console.log('Upload result:', result);
+            
+            // Check if we got a video object back (successful upload)
+            if (result.id && result.title) {
+              // Show success animation
+              setTimeout(() => {
+                this.showSuccess('Video uploaded successfully!');
+                this.showPage('home');
+                this.loadVideos();
+              }, 500);
+            } else {
+              throw new Error('Invalid response format');
+            }
           } else {
-            throw result;
+            // Handle HTTP error responses
+            const errorResult = JSON.parse(xhr.responseText);
+            throw errorResult;
           }
         } catch (e) {
           console.error('Upload error:', e);
-          this.showError(e.error || 'Upload failed');
+          this.showError(e.error || e.message || 'Upload failed');
           this.resetUploadForm();
         }
       });
