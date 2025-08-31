@@ -20,6 +20,7 @@
     "mime-types": "^2.1.35",
     "morgan": "^1.10.0",
     "mysql2": "^3.11.0",
+  "cors": "^2.8.5",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

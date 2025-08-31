@@ -3,6 +3,7 @@ import fileUpload from 'express-fileupload';
 import morgan from 'morgan';
 import path from 'path';
 import url from 'url';
+import cors from 'cors';
 
 import { config } from '../config/config.js';
 import DatabaseService from '../services/DatabaseService.js';
@@ -37,6 +38,7 @@ class AppController {
   initializeMiddleware() {
     this.app.use(morgan('dev'));
     this.app.use(express.json());
+    this.app.use(cors({ origin: '*', methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'], allowedHeaders: ['Content-Type','Authorization','Range'] }));
     this.app.use(fileUpload({ 
       createParentPath: true, 
       useTempFiles: true, 
