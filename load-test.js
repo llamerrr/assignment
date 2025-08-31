@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Load testing script for VideoShare app
+// PROBABLY DOESNT WORK JUST USE TRANSCODING.
 // Usage: node load-test.js <server-url> <username> <password> <concurrent-requests>
 
 const args = process.argv.slice(2);

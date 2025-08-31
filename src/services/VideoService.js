@@ -233,22 +233,24 @@ class VideoService {
     }
 
     const transcodes = await this.db.getTranscodesByVideoId(videoId);
-    const versions = [];
 
-    // Original version
-    versions.push({
-      id: 'original',
-      format: path.extname(video.stored_path).slice(1),
-      resolution: 'original',
-      size: video.size,
-      status: 'done'
-    });
+    // Shape expected by frontend download modal: { original, transcoded: [] }
+    const result = {
+      original: {
+        id: 'original',
+        format: path.extname(video.stored_path).slice(1),
+        resolution: 'original',
+        size: video.size,
+        status: 'done'
+      },
+      transcoded: []
+    };
 
     // Transcoded versions
     for (const t of transcodes) {
       if (t.status === 'done' && fs.existsSync(t.stored_path)) {
         const stats = fs.statSync(t.stored_path);
-        versions.push({
+        result.transcoded.push({
           id: t.id,
           format: t.format,
           resolution: t.resolution || 'original',
@@ -258,7 +260,7 @@ class VideoService {
       }
     }
 
-    return versions;
+    return result;
   }
 
   getThumbnailPath(videoId) {
